@@ -1,5 +1,13 @@
 
 // Service for making API calls to WooCommerce
+import { 
+  getWooCommerceSettingsByUserId, 
+  saveWooCommerceSettings as saveSettings, 
+  createImportLog,
+  updateImportLog,
+  WooCommerceSettings as DbWooCommerceSettings
+} from './databaseService';
+import { useAuth } from '@/contexts/AuthContext';
 
 export type WooCommerceSettings = {
   siteUrl: string;
@@ -23,7 +31,17 @@ export const getSettings = (): WooCommerceSettings | null => {
 };
 
 // Save WooCommerce settings to local storage
-export const saveSettings = (settings: WooCommerceSettings): void => {
+export const saveWooCommerceSettings = (settings: WooCommerceSettings, userId: number): void => {
+  const dbSettings: DbWooCommerceSettings = {
+    user_id: userId,
+    site_url: settings.siteUrl,
+    consumer_key: settings.consumerKey,
+    consumer_secret: settings.consumerSecret
+  };
+  
+  saveSettings(dbSettings);
+  
+  // For compatibility with existing code, also save to localStorage
   localStorage.setItem('woocommerce_settings', JSON.stringify(settings));
 };
 
@@ -70,6 +88,7 @@ export const parseCsvFile = async (file: File): Promise<string[][]> => {
 export const importProducts = async (
   mappedData: any[],
   settings: WooCommerceSettings,
+  userId: number,
   onProgress: (status: ImportStatus) => void
 ): Promise<ImportStatus> => {
   // Initial status
@@ -81,6 +100,17 @@ export const importProducts = async (
     status: 'processing',
     errors: [],
   };
+  
+  // Create initial import log
+  const importLog = createImportLog({
+    user_id: userId,
+    import_date: new Date().toISOString(),
+    total_products: status.total,
+    successful_imports: 0,
+    failed_imports: 0,
+    status: 'processing',
+    errors: []
+  });
   
   onProgress({...status});
   
@@ -100,11 +130,30 @@ export const importProducts = async (
       status.errors.push(`Error importing product: ${mappedData[i].name || `Product ${i+1}`}`);
     }
     
+    // Update the import log
+    updateImportLog({
+      ...importLog,
+      successful_imports: status.successful,
+      failed_imports: status.failed,
+      status: 'processing',
+      errors: status.errors
+    });
+    
     onProgress({...status});
   }
   
   // Final status
   status.status = status.failed === 0 ? 'completed' : 'completed';
+  
+  // Update the final import log
+  updateImportLog({
+    ...importLog,
+    successful_imports: status.successful,
+    failed_imports: status.failed,
+    status: status.status,
+    errors: status.errors
+  });
+  
   onProgress({...status});
   
   return status;

@@ -9,7 +9,7 @@ import {
   LogOut, 
   LogIn, 
   UserPlus,
-  FileImport
+  Upload
 } from "lucide-react";
 
 const Header: React.FC = () => {
@@ -20,7 +20,7 @@ const Header: React.FC = () => {
     <header className="fixed top-0 left-0 right-0 z-50 border-b bg-white/80 backdrop-blur-lg dark:bg-slate-900/80 border-slate-200 dark:border-slate-800">
       <div className="container flex items-center justify-between h-16 px-4 mx-auto sm:px-6">
         <Link to="/" className="flex items-center space-x-2">
-          <FileImport className="w-8 h-8 text-primary" />
+          <Upload className="w-8 h-8 text-primary" />
           <span className="text-xl font-semibold tracking-tight">Import Genie</span>
         </Link>
 
@@ -32,7 +32,7 @@ const Header: React.FC = () => {
                 Dashboard
               </Link>
               <Link to="/import" className="flex items-center text-sm text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">
-                <FileImport className="w-4 h-4 mr-1" />
+                <Upload className="w-4 h-4 mr-1" />
                 Import
               </Link>
               <Link to="/settings" className="flex items-center text-sm text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">

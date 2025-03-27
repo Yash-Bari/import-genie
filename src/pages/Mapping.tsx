@@ -13,7 +13,7 @@ import { getSettings, importProducts, ImportStatus } from "@/utils/apiService";
 import { toast } from "sonner";
 
 const Mapping = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [csvData, setCsvData] = useState<string[][]>([]);
@@ -61,9 +61,14 @@ const Mapping = () => {
     setIsImporting(true);
     
     try {
-      await importProducts(mappedData, settings, (status) => {
-        setImportStatus(status);
-      });
+      await importProducts(
+        mappedData, 
+        settings, 
+        user?.id || 0, // Pass the user ID for logging
+        (status) => {
+          setImportStatus(status);
+        }
+      );
     } catch (error) {
       console.error("Import error:", error);
       setImportStatus({

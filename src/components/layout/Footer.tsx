@@ -1,6 +1,6 @@
 
 import React from "react";
-import { FileImport, Github, Twitter } from "lucide-react";
+import { Github, Twitter, Upload } from "lucide-react";
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
       <div className="container px-4 py-8 mx-auto sm:px-6">
         <div className="flex flex-col items-center justify-between space-y-4 md:flex-row md:space-y-0">
           <div className="flex items-center space-x-2">
-            <FileImport className="w-5 h-5 text-primary" />
+            <Upload className="w-5 h-5 text-primary" />
             <span className="text-sm font-medium">Import Genie</span>
           </div>
 

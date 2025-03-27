@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { FileImport, Loader2 } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
 
 const RegisterForm: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -54,7 +54,7 @@ const RegisterForm: React.FC = () => {
     <Card className="glass-card w-full max-w-md mx-auto slide-up">
       <CardHeader className="space-y-1">
         <div className="flex justify-center mb-2">
-          <FileImport className="h-12 w-12 text-primary" />
+          <Upload className="h-12 w-12 text-primary" />
         </div>
         <CardTitle className="text-2xl font-semibold text-center">Create Account</CardTitle>
         <CardDescription className="text-center">

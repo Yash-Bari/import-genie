@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { FileImport, ArrowLeft, Database } from "lucide-react";
+import { Upload, ArrowLeft, Database } from "lucide-react";
 import { getSettings } from "@/utils/apiService";
 import FileUpload from "@/components/ui/FileUpload";
 import { toast } from "sonner";
@@ -45,7 +45,7 @@ const Import = () => {
           <div className="flex items-center justify-between slide-up">
             <div>
               <h1 className="text-3xl font-bold flex items-center">
-                <FileImport className="h-7 w-7 mr-2 text-primary" />
+                <Upload className="h-7 w-7 mr-2 text-primary" />
                 Import Products
               </h1>
               <p className="text-muted-foreground mt-1">

@@ -1,24 +1,56 @@
 
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/contexts/AuthContext";
-import { FileImport, LayoutDashboard, Settings, History, AlertTriangle } from "lucide-react";
-import { getSettings } from "@/utils/apiService";
+import { getImportLogsByUserId, ImportLog } from "@/utils/databaseService";
+import { 
+  BarChart, 
+  Upload, 
+  Settings, 
+  Clock, 
+  CheckCircle, 
+  XCircle, 
+  AlertCircle 
+} from "lucide-react";
 
 const Dashboard = () => {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const settings = getSettings();
-
+  const [importLogs, setImportLogs] = useState<ImportLog[]>([]);
+  
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/login");
+      return;
     }
-  }, [isAuthenticated, navigate]);
+    
+    if (user) {
+      // Load import logs for the user
+      const logs = getImportLogsByUserId(user.id);
+      setImportLogs(logs);
+    }
+  }, [isAuthenticated, user, navigate]);
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'failed':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      case 'processing':
+        return <Clock className="h-5 w-5 text-yellow-500 animate-pulse" />;
+      default:
+        return <AlertCircle className="h-5 w-5 text-gray-500" />;
+    }
+  };
+  
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleString();
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -28,107 +60,119 @@ const Dashboard = () => {
         <div className="container mx-auto max-w-6xl space-y-8">
           <div className="slide-up">
             <h1 className="text-3xl font-bold flex items-center">
-              <LayoutDashboard className="h-7 w-7 mr-2 text-primary" />
+              <BarChart className="h-7 w-7 mr-2 text-primary" />
               Dashboard
             </h1>
             <p className="text-muted-foreground mt-1">
-              Welcome back, {user?.username || "User"}
+              Welcome back, {user?.username}! Manage your WooCommerce imports.
             </p>
           </div>
           
-          {!settings && (
-            <Card className="glass-card border-amber-200 bg-amber-50/50 dark:bg-amber-900/10 dark:border-amber-900/20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 slide-up">
+            <Card className="hover-lift transition-all">
               <CardHeader className="pb-2">
-                <CardTitle className="text-lg flex items-center">
-                  <AlertTriangle className="h-5 w-5 mr-2 text-amber-500" />
-                  Setup Required
+                <CardTitle className="flex items-center text-lg">
+                  <Upload className="h-5 w-5 mr-2 text-primary" />
+                  Import Products
                 </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  You need to configure your WooCommerce API credentials before importing products.
-                </p>
-                <Button 
-                  onClick={() => navigate("/settings")} 
-                  variant="outline" 
-                  size="sm"
-                  className="text-amber-600 border-amber-200 hover:bg-amber-100"
-                >
-                  <Settings className="h-4 w-4 mr-1" />
-                  Configure Settings
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="glass-card hover-lift">
-              <CardHeader>
-                <CardTitle className="text-lg">Quick Import</CardTitle>
                 <CardDescription>
-                  Start a new product import
+                  Upload and map your CSV file
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button 
-                  onClick={() => navigate("/import")} 
-                  disabled={!settings}
-                  className="w-full"
+                  className="w-full" 
+                  onClick={() => navigate("/import")}
                 >
-                  <FileImport className="h-4 w-4 mr-2" />
                   Start Import
                 </Button>
               </CardContent>
             </Card>
             
-            <Card className="glass-card hover-lift">
-              <CardHeader>
-                <CardTitle className="text-lg">Settings</CardTitle>
+            <Card className="hover-lift transition-all">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-lg">
+                  <Settings className="h-5 w-5 mr-2 text-primary" />
+                  Settings
+                </CardTitle>
                 <CardDescription>
-                  Configure your API credentials
+                  Configure WooCommerce API
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <Button 
-                  onClick={() => navigate("/settings")} 
+                  className="w-full" 
                   variant="outline"
-                  className="w-full"
+                  onClick={() => navigate("/settings")}
                 >
-                  <Settings className="h-4 w-4 mr-2" />
                   Manage Settings
                 </Button>
               </CardContent>
             </Card>
             
-            <Card className="glass-card hover-lift">
-              <CardHeader>
-                <CardTitle className="text-lg">Import History</CardTitle>
+            <Card className="hover-lift transition-all">
+              <CardHeader className="pb-2">
+                <CardTitle className="flex items-center text-lg">
+                  <BarChart className="h-5 w-5 mr-2 text-primary" />
+                  Statistics
+                </CardTitle>
                 <CardDescription>
-                  View past import logs
+                  View your import activity
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <Button 
-                  variant="outline"
-                  className="w-full opacity-60"
-                  disabled
-                >
-                  <History className="h-4 w-4 mr-2" />
-                  View History
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2 text-center">Coming soon</p>
+              <CardContent className="space-y-2">
+                <div className="text-2xl font-bold">{importLogs.length}</div>
+                <div className="text-muted-foreground text-sm">Total imports</div>
               </CardContent>
             </Card>
           </div>
           
-          <Card className="glass-card mt-8">
+          <Card className="slide-up">
             <CardHeader>
-              <CardTitle className="text-lg">Recent Activity</CardTitle>
+              <CardTitle className="flex items-center">
+                <Clock className="h-5 w-5 mr-2 text-primary" />
+                Recent Import History
+              </CardTitle>
+              <CardDescription>
+                View your recent product import activities
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-center text-muted-foreground py-8">
-                No recent import activity found
-              </p>
+              {importLogs.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="text-left p-2">Date</th>
+                        <th className="text-left p-2">Products</th>
+                        <th className="text-left p-2">Successful</th>
+                        <th className="text-left p-2">Failed</th>
+                        <th className="text-left p-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {importLogs.map((log) => (
+                        <tr key={log.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-800">
+                          <td className="p-2">{formatDate(log.import_date)}</td>
+                          <td className="p-2">{log.total_products}</td>
+                          <td className="p-2 text-green-600">{log.successful_imports}</td>
+                          <td className="p-2 text-red-600">{log.failed_imports}</td>
+                          <td className="p-2">
+                            <div className="flex items-center">
+                              {getStatusIcon(log.status)}
+                              <span className="ml-2 capitalize">{log.status}</span>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  No import history yet. Start your first import to see logs here.
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

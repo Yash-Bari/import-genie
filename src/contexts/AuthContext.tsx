@@ -1,6 +1,11 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { toast } from "sonner";
+import { 
+  createUser, 
+  getUserByUsername, 
+  User as DbUser
+} from "@/utils/databaseService";
 
 type User = {
   id: number;
@@ -41,18 +46,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Mock API call - in a real app this would call your backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Check if user exists in our database
+      const dbUser = getUserByUsername(username);
       
-      // For demo purposes, accept any credentials
-      const mockUser = {
-        id: 1,
-        username,
-        email: `${username}@example.com`,
+      if (!dbUser || dbUser.password !== password) {
+        // In a real app, we would use proper password comparison
+        toast.error("Invalid username or password");
+        return false;
+      }
+      
+      const loggedInUser: User = {
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
       };
       
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      setUser(loggedInUser);
+      localStorage.setItem("user", JSON.stringify(loggedInUser));
       toast.success("Successfully logged in");
       return true;
     } catch (error) {
@@ -68,18 +78,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Mock API call - in a real app this would call your backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Check if username already exists
+      const existingUser = getUserByUsername(username);
+      if (existingUser) {
+        toast.error("Username already taken");
+        return false;
+      }
       
-      // For demo purposes, always succeed
-      const mockUser = {
-        id: Date.now(),
-        username,
-        email,
+      // Create new user in our database
+      const dbUser = createUser(username, email, password);
+      
+      const newUser: User = {
+        id: dbUser.id,
+        username: dbUser.username,
+        email: dbUser.email,
       };
       
-      setUser(mockUser);
-      localStorage.setItem("user", JSON.stringify(mockUser));
+      setUser(newUser);
+      localStorage.setItem("user", JSON.stringify(newUser));
       toast.success("Account created successfully");
       return true;
     } catch (error) {
