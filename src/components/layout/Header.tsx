@@ -9,7 +9,8 @@ import {
   LogOut, 
   LogIn, 
   UserPlus,
-  Upload
+  Upload,
+  Package
 } from "lucide-react";
 
 const Header: React.FC = () => {
@@ -34,6 +35,10 @@ const Header: React.FC = () => {
               <Link to="/import" className="flex items-center text-sm text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">
                 <Upload className="w-4 h-4 mr-1" />
                 Import
+              </Link>
+              <Link to="/products" className="flex items-center text-sm text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">
+                <Package className="w-4 h-4 mr-1" />
+                Products
               </Link>
               <Link to="/settings" className="flex items-center text-sm text-slate-600 hover:text-primary dark:text-slate-300 dark:hover:text-white transition-colors">
                 <Settings className="w-4 h-4 mr-1" />

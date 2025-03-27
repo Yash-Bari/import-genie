@@ -494,9 +494,14 @@ const ProductList = () => {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious 
-                        onClick={() => !loading && !syncing && currentPage > 1 && setCurrentPage(p => Math.max(1, p - 1))}
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (!loading && !syncing && currentPage > 1) {
+                            setCurrentPage(p => Math.max(1, p - 1));
+                          }
+                        }}
                         className={currentPage === 1 || loading || syncing ? 'pointer-events-none opacity-50' : ''}
-                        aria-disabled={currentPage === 1 || loading || syncing}
                       />
                     </PaginationItem>
                     
@@ -508,7 +513,13 @@ const ProductList = () => {
                           </span>
                         ) : (
                           <PaginationLink
-                            onClick={() => !loading && !syncing && setCurrentPage(Number(page))}
+                            href="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (!loading && !syncing) {
+                                setCurrentPage(Number(page));
+                              }
+                            }}
                             isActive={currentPage === page}
                             className={loading || syncing ? 'pointer-events-none' : ''}
                           >
@@ -520,9 +531,14 @@ const ProductList = () => {
                     
                     <PaginationItem>
                       <PaginationNext 
-                        onClick={() => !loading && !syncing && currentPage < totalPages && setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (!loading && !syncing && currentPage < totalPages) {
+                            setCurrentPage(p => Math.min(totalPages, p + 1));
+                          }
+                        }}
                         className={currentPage === totalPages || loading || syncing ? 'pointer-events-none opacity-50' : ''}
-                        aria-disabled={currentPage === totalPages || loading || syncing}
                       />
                     </PaginationItem>
                   </PaginationContent>
