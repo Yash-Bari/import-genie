@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -76,7 +77,7 @@ const ProductList = () => {
     try {
       setLoading(true);
       
-      const settings = getSettings(user.id);
+      const settings = getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
@@ -110,7 +111,7 @@ const ProductList = () => {
     if (!user) return;
     
     try {
-      const settings = getSettings(user.id);
+      const settings = getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
@@ -165,7 +166,7 @@ const ProductList = () => {
       setSyncing(true);
       setSyncProgress({ synced: 0, total: products.length });
       
-      const settings = getSettings(user.id);
+      const settings = getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
