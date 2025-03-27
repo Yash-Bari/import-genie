@@ -1,7 +1,6 @@
-
 // Service for making API calls to WooCommerce
 import { 
-  getWooCommerceSettingsByUserId, 
+  getWooCommerceSettingsByUserId as getSettingsFromDb, 
   saveWooCommerceSettings as saveSettings, 
   createImportLog,
   updateImportLog,
@@ -278,3 +277,6 @@ export const syncAllProducts = async (
   
   return updatedProducts;
 };
+
+// Export getWooCommerceSettingsByUserId for use in other components
+export const getWooCommerceSettingsByUserId = getSettingsFromDb;

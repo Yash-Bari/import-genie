@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -28,7 +27,6 @@ import {
   CardTitle 
 } from "@/components/ui/card";
 import { 
-  Sync, 
   RefreshCw, 
   Package, 
   AlertTriangle, 
@@ -45,7 +43,6 @@ import {
   Product, 
   getWooCommerceSettingsByUserId 
 } from "@/utils/apiService";
-import { getWooCommerceSettingsByUserId as getSettings } from "@/utils/databaseService";
 import { toast } from "sonner";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -86,7 +83,6 @@ const ProductList = () => {
         return;
       }
       
-      // Convert the database settings to the format expected by the API
       const apiSettings = {
         siteUrl: settings.site_url,
         consumerKey: settings.consumer_key,
@@ -121,7 +117,6 @@ const ProductList = () => {
         return;
       }
       
-      // Update UI to show syncing state
       setProducts(prevProducts => 
         prevProducts.map(p => 
           p.id === product.id 
@@ -130,17 +125,14 @@ const ProductList = () => {
         )
       );
       
-      // Convert the database settings to the format expected by the API
       const apiSettings = {
         siteUrl: settings.site_url,
         consumerKey: settings.consumer_key,
         consumerSecret: settings.consumer_secret
       };
       
-      // Perform the sync
       const syncedProduct = await syncProduct(product, apiSettings);
       
-      // Update the product in the list
       setProducts(prevProducts => 
         prevProducts.map(p => 
           p.id === product.id ? syncedProduct : p
@@ -156,7 +148,6 @@ const ProductList = () => {
       console.error("Error syncing product:", error);
       toast.error(`Failed to sync product: ${error instanceof Error ? error.message : 'Unknown error'}`);
       
-      // Update UI to show error state
       setProducts(prevProducts => 
         prevProducts.map(p => 
           p.id === product.id 
@@ -181,7 +172,6 @@ const ProductList = () => {
         return;
       }
       
-      // Convert the database settings to the format expected by the API
       const apiSettings = {
         siteUrl: settings.site_url,
         consumerKey: settings.consumer_key,
@@ -190,7 +180,6 @@ const ProductList = () => {
       
       toast.info("Starting product sync...");
       
-      // Start the sync process
       const syncedProducts = await syncAllProducts(
         products,
         apiSettings,
@@ -199,10 +188,8 @@ const ProductList = () => {
         }
       );
       
-      // Update all products with sync results
       setProducts(syncedProducts);
       
-      // Count success and failures
       const successCount = syncedProducts.filter(p => p.syncStatus === 'synced').length;
       const errorCount = syncedProducts.filter(p => p.syncStatus === 'error').length;
       
@@ -224,7 +211,6 @@ const ProductList = () => {
     loadProducts();
   };
   
-  // Render stock status with appropriate icon
   const renderStockStatus = (status: Product['stockStatus']) => {
     switch (status) {
       case 'instock':
@@ -253,7 +239,6 @@ const ProductList = () => {
     }
   };
   
-  // Render sync status with appropriate icon
   const renderSyncStatus = (product: Product) => {
     switch (product.syncStatus) {
       case 'synced':
@@ -294,52 +279,42 @@ const ProductList = () => {
     }
   };
   
-  // Generate an array of page numbers to display
   const getPageNumbers = () => {
     const pageNumbers = [];
-    const maxPageItems = 5; // Max number of page items to show
+    const maxPageItems = 5;
     
     if (totalPages <= maxPageItems) {
-      // If we have fewer pages than the max, show all pages
       for (let i = 1; i <= totalPages; i++) {
         pageNumbers.push(i);
       }
     } else {
-      // Always show first page
       pageNumbers.push(1);
       
-      // Calculate start and end pages to show
       let startPage = Math.max(2, currentPage - 1);
       let endPage = Math.min(totalPages - 1, currentPage + 1);
       
-      // Adjust if we're near the start
       if (currentPage <= 3) {
         startPage = 2;
         endPage = Math.min(totalPages - 1, 4);
       }
       
-      // Adjust if we're near the end
       if (currentPage >= totalPages - 2) {
         startPage = Math.max(2, totalPages - 3);
         endPage = totalPages - 1;
       }
       
-      // Add ellipsis after first page if needed
       if (startPage > 2) {
         pageNumbers.push('ellipsis_start');
       }
       
-      // Add middle pages
       for (let i = startPage; i <= endPage; i++) {
         pageNumbers.push(i);
       }
       
-      // Add ellipsis before last page if needed
       if (endPage < totalPages - 1) {
         pageNumbers.push('ellipsis_end');
       }
       
-      // Always show last page
       pageNumbers.push(totalPages);
     }
     
@@ -388,7 +363,7 @@ const ProductList = () => {
                   onClick={handleSyncAll}
                   disabled={syncing || products.length === 0}
                 >
-                  <Sync className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                  <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
                   Sync All
                 </Button>
               </div>
@@ -518,10 +493,9 @@ const ProductList = () => {
                   <PaginationContent>
                     <PaginationItem>
                       <PaginationPrevious 
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        aria-disabled={currentPage === 1}
-                        className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                        onClick={() => !loading && !syncing && currentPage > 1 && setCurrentPage(p => Math.max(1, p - 1))}
+                        className={currentPage === 1 || loading || syncing ? 'pointer-events-none opacity-50' : ''}
+                        aria-disabled={currentPage === 1 || loading || syncing}
                       />
                     </PaginationItem>
                     
@@ -533,8 +507,9 @@ const ProductList = () => {
                           </span>
                         ) : (
                           <PaginationLink
-                            onClick={() => setCurrentPage(Number(page))}
+                            onClick={() => !loading && !syncing && setCurrentPage(Number(page))}
                             isActive={currentPage === page}
+                            className={loading || syncing ? 'pointer-events-none' : ''}
                           >
                             {page}
                           </PaginationLink>
@@ -544,10 +519,9 @@ const ProductList = () => {
                     
                     <PaginationItem>
                       <PaginationNext 
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                        aria-disabled={currentPage === totalPages}
-                        className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                        onClick={() => !loading && !syncing && currentPage < totalPages && setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        className={currentPage === totalPages || loading || syncing ? 'pointer-events-none opacity-50' : ''}
+                        aria-disabled={currentPage === totalPages || loading || syncing}
                       />
                     </PaginationItem>
                   </PaginationContent>
