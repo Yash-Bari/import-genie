@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { FileImport, ArrowRight, Users, Zap, Shield } from "lucide-react";
+import { Upload, ArrowRight, Users, Zap, Shield } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const Index = () => {
           <div className="container mx-auto max-w-6xl">
             <div className="flex flex-col items-center text-center space-y-6 slide-up">
               <div className="rounded-full bg-primary/10 p-3 mb-2">
-                <FileImport className="h-12 w-12 text-primary" />
+                <Upload className="h-12 w-12 text-primary" />
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
                 WooCommerce Product <span className="text-gradient">Import Genie</span>
@@ -51,7 +51,7 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="glass-card p-6 hover-lift">
                 <div className="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3 w-14 h-14 flex items-center justify-center mb-4">
-                  <FileImport className="h-7 w-7 text-blue-600 dark:text-blue-400" />
+                  <Upload className="h-7 w-7 text-blue-600 dark:text-blue-400" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Smart Mapping</h3>
                 <p className="text-muted-foreground">
