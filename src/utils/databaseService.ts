@@ -80,9 +80,18 @@ export const getWooCommerceSettings = (): WooCommerceSettings[] => {
   return storedSettings ? JSON.parse(storedSettings) : [];
 };
 
+// Fix: Ensure we properly handle the case where settings might not be in the expected format
 export const getWooCommerceSettingsByUserId = (userId: number): WooCommerceSettings | undefined => {
-  const allSettings = getWooCommerceSettings();
-  return allSettings.find(settings => settings.user_id === userId);
+  try {
+    const allSettings = getWooCommerceSettings();
+    if (!Array.isArray(allSettings)) {
+      return undefined;
+    }
+    return allSettings.find(settings => settings.user_id === userId);
+  } catch (error) {
+    console.error("Error getting WooCommerce settings:", error);
+    return undefined;
+  }
 };
 
 // Import Logs Methods

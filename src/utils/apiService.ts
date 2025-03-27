@@ -279,4 +279,19 @@ export const syncAllProducts = async (
 };
 
 // Export getWooCommerceSettingsByUserId for use in other components
-export const getWooCommerceSettingsByUserId = getSettingsFromDb;
+export const getWooCommerceSettingsByUserId = (userId: number): WooCommerceSettings | undefined => {
+  const settings = getWooCommerceSettingsByUserId as unknown as Function;
+  try {
+    const dbSettings = getSettingsFromDb(userId);
+    if (!dbSettings) return undefined;
+    
+    return {
+      siteUrl: dbSettings.site_url,
+      consumerKey: dbSettings.consumer_key,
+      consumerSecret: dbSettings.consumer_secret
+    };
+  } catch (error) {
+    console.error("Error getting WooCommerce settings:", error);
+    return undefined;
+  }
+};

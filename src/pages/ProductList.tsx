@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -77,7 +76,7 @@ const ProductList = () => {
     try {
       setLoading(true);
       
-      const settings = getWooCommerceSettingsByUserId(user.id);
+      const settings = await getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
@@ -85,9 +84,9 @@ const ProductList = () => {
       }
       
       const apiSettings = {
-        siteUrl: settings.site_url,
-        consumerKey: settings.consumer_key,
-        consumerSecret: settings.consumer_secret
+        siteUrl: settings.siteUrl,
+        consumerKey: settings.consumerKey,
+        consumerSecret: settings.consumerSecret
       };
       
       const { products: fetchedProducts, total } = await fetchProducts(
@@ -111,7 +110,7 @@ const ProductList = () => {
     if (!user) return;
     
     try {
-      const settings = getWooCommerceSettingsByUserId(user.id);
+      const settings = await getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
@@ -127,9 +126,9 @@ const ProductList = () => {
       );
       
       const apiSettings = {
-        siteUrl: settings.site_url,
-        consumerKey: settings.consumer_key,
-        consumerSecret: settings.consumer_secret
+        siteUrl: settings.siteUrl,
+        consumerKey: settings.consumerKey,
+        consumerSecret: settings.consumerSecret
       };
       
       const syncedProduct = await syncProduct(product, apiSettings);
@@ -166,7 +165,7 @@ const ProductList = () => {
       setSyncing(true);
       setSyncProgress({ synced: 0, total: products.length });
       
-      const settings = getWooCommerceSettingsByUserId(user.id);
+      const settings = await getWooCommerceSettingsByUserId(user.id);
       if (!settings) {
         toast.error("Please configure your WooCommerce settings first");
         navigate("/settings");
@@ -174,9 +173,9 @@ const ProductList = () => {
       }
       
       const apiSettings = {
-        siteUrl: settings.site_url,
-        consumerKey: settings.consumer_key,
-        consumerSecret: settings.consumer_secret
+        siteUrl: settings.siteUrl,
+        consumerKey: settings.consumerKey,
+        consumerSecret: settings.consumerSecret
       };
       
       toast.info("Starting product sync...");
